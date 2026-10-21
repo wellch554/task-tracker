@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import * as api from '../api/client';
 import type { Task } from '../api/client';
 
+function errorMessage(err: unknown) {
+  return err instanceof Error ? err.message : String(err);
+}
+
 export function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -13,13 +17,13 @@ export function useTasks() {
       setError(null);
       return true;
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(errorMessage(err));
       return false;
     }
   }
 
   useEffect(() => {
-    void run(async () => setTasks(await api.listTasks()));
+    api.listTasks().then(setTasks, (err: unknown) => setError(errorMessage(err)));
   }, []);
 
   return {
