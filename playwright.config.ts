@@ -7,6 +7,8 @@ const tasksFile = join(tmpdir(), `task-tracker-e2e-${Date.now()}.json`);
 
 export default defineConfig({
   testDir: './e2e',
+  // All tests share one API and its data, so they can't run in parallel.
+  workers: 1,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   reporter: 'list',
